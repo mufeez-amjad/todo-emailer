@@ -25,9 +25,13 @@ class Emailer:
         return server
 
     def send_emails(self):
-        if not self.email_address:
+        if not self.emails:
             print('No emails to send.')
             return
+        if not (self.email_address and self.password):
+            print('Login required')
+            return
+        
         try:
             server = self.connect_to_smtp()
 
