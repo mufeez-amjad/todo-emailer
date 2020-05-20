@@ -4,6 +4,7 @@ from typing import Dict
 
 TASK_LISTS = ['Home', 'School/Coop', 'Side Projects']
 
+COURSE_LISTS = ['EARTH 121', 'CS 240', 'CS 247', 'CS 348', 'MATH 239', 'ECE 192']
 
 class ToDo:
     def __init__(self):
@@ -70,7 +71,7 @@ class ToDo:
 
     def _list(self, options: Dict) -> Dict:
         list_choice = input('Enter the list to add to this task to.\n')
-        while list_choice not in TASK_LISTS:
+        while list_choice not in TASK_LISTS + COURSE_LISTS:
             list_choice = input('Enter the list to add to this task to.\n')
 
         options['list'] = list_choice
@@ -82,11 +83,30 @@ class ToDo:
         options['tags'] = tags
         return options
 
-    def task(self):
+    def bulk_task(self):
+        list_choice = input('Enter the list to bulk create for.\n')
+        while list_choice not in TASK_LISTS + COURSE_LISTS:
+            list_choice = input('Enter the list to bulk create for.\n')
+        
+        prompt = (
+            '1. Enter a task.\n'
+            '0. Finish\n'
+        )
+
+        choice = int(input(prompt))
+
+        while choice == 1:
+            self.task(list_choice)
+            choice = int(input(prompt))
+
+
+    def task(self, list_choice=None):
         task = input('Enter your task.\n')
         email_subject = task
 
         options = self.get_options()
+        if list_choice:
+            options['list'] = list_choice
 
         email = Email(email_subject, '', options)
         self.emailer.add_email(email)
@@ -122,9 +142,17 @@ def main():
     option = int(input(prompt))
     print()
     while option:
-        if option is 1:
-            todo.task()
-        elif option is 2:
+        if option == 1:
+            prompt2 = (
+                '1. Individual\n'
+                '2. Bulk create for list\n'
+            )
+            choice = int(input(prompt2))
+            if choice == 2:
+                todo.bulk_task()
+            else:
+                todo.task()
+        elif option == 2:
             todo.checklist()
         option = int(input(prompt))
         print()
